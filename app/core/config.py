@@ -7,6 +7,8 @@ class Settings(BaseSettings):
     PROFILE: str = "local"
     API_PREFIX: str = "/api/v1"
     ROOT_PATH: str = str(Path(__file__).parent.parent.parent)
+    APP_MODE: str
+    PORT: int
 
     HF_TOKEN: str
     LANGSMITH_API_KEY: str
