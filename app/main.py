@@ -1,9 +1,12 @@
+import os
 from contextlib import asynccontextmanager
 
+import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+from app.core.config import settings
 from app.interfaces.api.routers import router
 from app.storage.vectorstore import init_vectorstore
 
@@ -39,3 +42,23 @@ class HealthResponse(BaseModel):
 )
 def health():
     return HealthResponse(status="healthy")
+
+
+if __name__ == "__main__":
+    if settings.APP_MODE == "ui":
+        print("Starting in streamlit server...")
+        os.execvp(
+            "python",
+            [
+                "python",
+                "-m",
+                "streamlit",
+                "run",
+                "app/interfaces/ui.py",
+                "--server.port",
+                str(settings.PORT),
+            ],
+        )
+    else:
+        print("Starting in fastapi server...")
+        uvicorn.run(app, host="0.0.0.0", port=settings.PORT)

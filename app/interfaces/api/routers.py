@@ -22,7 +22,7 @@ async def query(request: QueryRequest, chain=Depends(get_chain)):
 
 @router.post(
     "/chat",
-    response_model=StreamingResponse,
+    response_class=StreamingResponse,
     summary="채팅 응답 API",
     description="RAG 기반으로 history를 반영한 채팅 API",
 )
