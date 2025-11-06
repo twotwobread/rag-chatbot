@@ -17,10 +17,7 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = [
-    "langchain-chroma>=1.0.0",
-    "ruff>=0.14.2",
-]
+dev = ["langchain-chroma>=1.0.0", "ruff>=0.14.2"]
 
 [tool.ruff]
 line-length = 80
@@ -33,6 +30,8 @@ select = [
     "F", # pyflakes
     "I", # isort
 ]
+ignore = ["E501"]
+
 
 [tool.ruff.lint.isort]
 known-first-party = ["app"]
