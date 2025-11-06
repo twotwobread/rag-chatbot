@@ -2,8 +2,7 @@ from typing import Iterator
 
 import streamlit as st
 
-from app.rag.chains import get_chain
-from app.services.qa_service import QAService
+from app.rag.chatbot import get_rag_chatbot
 from app.storage.vectorstore import init_vectorstore
 
 
@@ -14,9 +13,8 @@ def initialize_app():
 
 
 def get_ai_message(text: str, session_id: str) -> Iterator[str]:
-    rag_chain = get_chain()
-    qa_service = QAService(rag_chain)
-    return qa_service.chat(text, session_id)
+    chatbot = get_rag_chatbot()
+    return chatbot.ask_stream(text, session_id)
 
 
 initialize_app()
