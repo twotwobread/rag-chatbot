@@ -1,8 +1,25 @@
+from typing import Iterator
+
 import streamlit as st
 
+from app.rag.chains import get_chain
+from app.services.qa_service import QAService
+from app.storage.vectorstore import init_vectorstore
 
-def get_ai_message(): ...
 
+@st.cache_resource
+def initialize_app():
+    init_vectorstore()
+    return True
+
+
+def get_ai_message(text: str, session_id: str) -> Iterator[str]:
+    rag_chain = get_chain()
+    qa_service = QAService(rag_chain)
+    return qa_service.chat(text, session_id)
+
+
+initialize_app()
 
 st.set_page_config(page_title="저작권 챗봇")
 
@@ -26,8 +43,12 @@ if user_question := st.chat_input(
     )
 
     with st.spinner("답변을 생성하는 중입니다..."):
+        session_id = st.session_state.get("session_id", "default")
         with st.chat_message("ai"):
-            st.write("AI 응답 메시지")
+            full_response = st.write_stream(
+                get_ai_message(user_question, session_id)
+            )
+
         st.session_state.message_list.append(
-            {"role": "ai", "content": "AI 응답 메시지"}
+            {"role": "ai", "content": full_response}
         )
