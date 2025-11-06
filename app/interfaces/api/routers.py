@@ -5,7 +5,7 @@ from app.rag.chatbot import RAGChatbot, get_rag_chatbot
 from app.schemas.chat import ChatRequest
 from app.schemas.query import QueryRequest, QueryResponse
 
-router = APIRouter(prefix="/chats")
+router = APIRouter()
 
 
 @router.post(
