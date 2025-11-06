@@ -11,7 +11,6 @@ from app.storage.vectorstore import init_vectorstore
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_vectorstore()
-
     yield
 
 

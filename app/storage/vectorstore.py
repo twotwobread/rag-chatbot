@@ -28,11 +28,6 @@ def init_vectorstore():
     )
 
 
-def close_vectorstore():
-    if db is not None:
-        db.persis
-
-
 @lru_cache(maxsize=1)
 def get_retriever():
     return db.as_retriever()
