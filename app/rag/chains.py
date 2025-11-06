@@ -1,4 +1,4 @@
-from typing import Annotated, Generator, NotRequired, TypedDict
+from typing import Annotated, Iterator, NotRequired, TypedDict
 
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 from langgraph.checkpoint.memory import MemorySaver
@@ -112,7 +112,7 @@ class RAGChain:
         answer = result["messages"][-1].content
         return QueryResponse(answer=answer)
 
-    def chat(self, text: str, session_id: str) -> Generator[str, None, None]:
+    def chat(self, text: str, session_id: str) -> Iterator[str]:
         """대화형 질의 (히스토리 포함)"""
         config = {"configurable": {"thread_id": session_id}}
         result = self.chat_graph.invoke(
