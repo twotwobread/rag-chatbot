@@ -35,3 +35,8 @@ ignore = ["E501"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["app"]
+
+[tool.uv.workspace]
+members = [
+    "mcp-servers/test-to-sql",
+]
