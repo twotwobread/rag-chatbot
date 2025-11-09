@@ -1,15 +1,29 @@
 from dataclasses import dataclass
+from datetime import datetime
 from urllib.parse import quote_plus
 
-from sqlalchemy import inspect, text
+from sqlalchemy import Column, DateTime, inspect, text
 from sqlalchemy.ext.asyncio import (
+    AsyncAttrs,
     async_sessionmaker,
     create_async_engine,
 )
+from sqlalchemy.orm import DeclarativeBase, Mapped
+from utils import now_utc
+
+
+class Base(AsyncAttrs, DeclarativeBase):
+    created_at: Mapped[datetime] = Column(
+        DateTime(timezone=True), index=True, default=now_utc
+    )
+    updated_at: Mapped[datetime] = Column(
+        DateTime(timezone=True), default=now_utc, onupdate=now_utc
+    )
 
 
 @dataclass
 class DBConfig:
+    mode: str
     host: str
     port: int
     schema: str
@@ -18,17 +32,27 @@ class DBConfig:
     scheme: str
 
 
+def create_db_uri(config: DBConfig) -> str:
+    if config.mode == "sqlite":
+        return f"{config.scheme}:///{config.host}"
+
+    return (
+        f"{config.scheme}://{config.user}:{quote_plus(config.password)}"
+        f"@{config.host}:{config.port}/{config.schema}"
+    )
+
+
 class AsyncDatabaseManager:
     def __init__(self, config: DBConfig):
         self.config = config
 
-        database_uri = (
-            f"{self.config.scheme}://{self.config.user}:{quote_plus(self.config.password)}"
-            f"@{self.config.host}:{self.config.port}/{self.config.schema}"
-        )
+        database_uri = create_db_uri(config)
         self.engine = create_async_engine(
             database_uri, pool_size=20, pool_pre_ping=True
         )
+        Base.metadata.create_all(self.engine)
+        print(f"Database created '{config.mode}' at {config.host}")
+
         self.inspector = inspect(self.engine.sync_engine)
         self.session_factory = async_sessionmaker(
             bind=self.engine, expire_on_commit=False
