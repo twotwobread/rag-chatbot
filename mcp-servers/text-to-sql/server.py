@@ -1,5 +1,5 @@
-from config import settings
-from database import AsyncDatabaseManager, DBConfig
+from core.config import settings
+from core.database import AsyncDatabaseManager, DBConfig
 from langchain_google_genai.chat_models import ChatGoogleGenerativeAI
 from mcp.server.fastmcp import FastMCP
 from mcp.types import Tool
@@ -17,6 +17,7 @@ mcp = FastMCP("Text-to-SQL")
 @mcp.tool()
 async def query_database(question: str) -> int:
     db_config = DBConfig(
+        mode=settings.DB_MODE,
         host=settings.DB_HOST,
         port=settings.DB_PORT,
         schema=settings.DB_SCHEMA,
